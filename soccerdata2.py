@@ -1,8 +1,8 @@
-import requests
-import pandas as pd
-import json
 import datetime
-from datetime import timedelta
+import json
+
+import pandas as pd
+import requests
 
 # URL Params
 params = {

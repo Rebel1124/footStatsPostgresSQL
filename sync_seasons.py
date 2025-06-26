@@ -11,7 +11,7 @@ from src.utils import fetch_season
 
 def sync_seasons():
     footy = FootyStats(FOOTYSTATS_API_KEY, 3)
-    season_metadatas = get_season_metadatas(footy, LEAGUES_NAMES, last=5)
+    season_metadatas = get_season_metadatas(footy, LEAGUES_NAMES, last=1)
     for metadata in season_metadatas:
         season = fetch_season(footy, metadata)
         upsert_season_to_db(season)

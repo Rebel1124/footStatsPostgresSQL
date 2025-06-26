@@ -11,7 +11,7 @@ from src.footystats_db import (
 
 def sync_matches_details():
     footy = FootyStats(FOOTYSTATS_API_KEY, 3)
-    season_metadatas = get_season_metadatas(footy, LEAGUES_NAMES)
+    season_metadatas = get_season_metadatas(footy, LEAGUES_NAMES, last=1)
     for metadata in season_metadatas:
         matches = footy.get_league_matches(metadata.season_id)
         match_ids = {m.id for m in matches[:10]}

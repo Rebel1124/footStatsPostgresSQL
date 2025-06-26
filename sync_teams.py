@@ -11,13 +11,13 @@ from src.footystats_db import (
 
 def sync_teams():
     footy = FootyStats(FOOTYSTATS_API_KEY, 3)
-    season_metadatas = get_season_metadatas(footy, LEAGUES_NAMES, 5)
+    season_metadatas = get_season_metadatas(footy, LEAGUES_NAMES, 1)
     for metadata in season_metadatas:
         teams = footy.get_league_teams(metadata.season_id)
         teams_ids = {team.id for team in teams}
         missing_ids = get_missing_team_ids(teams_ids)
         for team_id in missing_ids:
-            team_lastx = None
+            team_lastx = footy.get_team_lastx(team_id)
             team_snapshots = footy.get_team(team_id)
             upsert_team_to_db(team_snapshots, team_lastx)
             logger.info(

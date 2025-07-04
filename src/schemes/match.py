@@ -1,4 +1,4 @@
-from typing import Annotated, Literal
+from typing import Annotated
 
 from pydantic import HttpUrl
 
@@ -6,6 +6,7 @@ from .base import (
     StrictBaseModel,
     add_base_domain,
     add_cdn_img_domain,
+    minus_one_to_none,
     validate_event_times,
     validate_season_year,
 )
@@ -16,10 +17,10 @@ class Match(StrictBaseModel):
     homeID: int
     awayID: int
     season: Annotated[str, validate_season_year]
-    status: Literal["incomplete", "complete", "canceled", "suspended"]
+    status: str  # Literal["incomplete", "complete", "canceled", "suspended"]
     roundID: int
     game_week: int
-    revised_game_week: Literal[-1]
+    revised_game_week: Annotated[int | None, minus_one_to_none]
     homeGoals: Annotated[list[str], validate_event_times]
     awayGoals: Annotated[list[str], validate_event_times]
     homeGoalCount: int

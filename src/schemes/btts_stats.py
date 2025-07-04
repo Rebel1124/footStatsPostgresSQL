@@ -20,7 +20,7 @@ class _League(StrictBaseModel):
 
     domestic_scale: int
     international_scale: int
-    status: Literal["In Progress"]
+    status: str  # Literal["In Progress"]
     division: int
     starting_year: int
     ending_year: int

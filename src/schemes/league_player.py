@@ -17,7 +17,7 @@ class LeaguePlayer(StrictBaseModel):
     height: int
     weight: int
     league: str
-    league_type: Literal["Domestic League", "Cup"]
+    league_type: str  # Literal["Domestic League", "Cup"]
     season: Annotated[str, validate_season_year]
     starting_year: int
     ending_year: int

@@ -1,4 +1,4 @@
-from typing import Annotated, Literal
+from typing import Annotated
 
 from pydantic import HttpUrl, StringConstraints
 
@@ -15,7 +15,7 @@ class LeagueReferee(StrictBaseModel):
     shorthand: str
     age: int
     league: str
-    league_type: Literal["Domestic League", "Cup"]
+    league_type: str  # Literal["Domestic League", "Cup"]
     url: HttpUrl
     season: Annotated[str, validate_season_year]
     continent: StrContinentCode

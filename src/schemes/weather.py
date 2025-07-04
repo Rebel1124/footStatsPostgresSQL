@@ -52,15 +52,15 @@ class Weather(StrictBaseModel):
     type: str
     temperature_celcius: _Temperature
     clouds: Annotated[str | None, validate_percent]
-    code: Literal[
-        "rain",
-        "clear",
-        "clouds",
-        "fog",
-        "mist",
-        "snow",
-        "drizzle",
-        "thunderstorm",
-        "haze",
-    ]
+    code: str  # Literal[
+    #     "rain",
+    #     "clear",
+    #     "clouds",
+    #     "fog",
+    #     "mist",
+    #     "snow",
+    #     "drizzle",
+    #     "thunderstorm",
+    #     "haze",
+    # ]
     pressure: int

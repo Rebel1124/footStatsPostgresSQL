@@ -26,15 +26,18 @@ class _CardDetails(StrictBaseModel):
 
 
 class _PlayerEvent(StrictBaseModel):
-    event_type: Literal[
-        "Yellow",
-        "Goal",
-        "Own Goal",
-        "Penalty Goal",
-        "Second Yellow",
-        "Red",
-        "Penalty Miss",
-    ]
+    event_type: (
+        str
+        | Literal[
+            "Yellow",
+            "Goal",
+            "Own Goal",
+            "Penalty Goal",
+            "Second Yellow",
+            "Red",
+            "Penalty Miss",
+        ]
+    )
     event_time: EventTime
 
 

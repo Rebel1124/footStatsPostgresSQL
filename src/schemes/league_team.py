@@ -1,4 +1,4 @@
-from typing import Annotated, Literal
+from typing import Annotated
 
 from pydantic import HttpUrl
 
@@ -51,7 +51,7 @@ class LeagueTeam(StrictBaseModel):
     table_position: int
     performance_rank: int
     risk: int
-    season_format: Literal["Domestic League", "Cup"]
+    season_format: str  # Literal["Domestic League", "Cup"]
     competition_id: int
     full_name: str
     alt_names: list[str]

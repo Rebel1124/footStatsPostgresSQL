@@ -1,4 +1,4 @@
-from typing import Annotated, Literal
+from typing import Annotated
 
 from pydantic import HttpUrl
 
@@ -24,7 +24,7 @@ class TeamLastX(StrictBaseModel):
     table_position: int
     performance_rank: int
     risk: int
-    season_format: Literal["Cup", "Domestic League", "International"]
+    season_format: str  # Literal["Cup", "Domestic League", "International"]
     competition_id: int
     founded: Annotated[str, validate_season_year]
     country: str

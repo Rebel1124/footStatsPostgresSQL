@@ -1,4 +1,4 @@
-from typing import Annotated, Literal
+from typing import Annotated
 
 from pydantic import BaseModel, HttpUrl
 
@@ -19,7 +19,7 @@ class LeagueStats(StrictBaseModel):
     name: str
     english_name: str
     shortHand: str
-    status: Literal["Incompleted", "Completed", "In Progress"]
+    status: str  # Literal["Incompleted", "Completed", "In Progress"]
 
     # Name
     name_jp: str | None

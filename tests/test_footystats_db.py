@@ -1,13 +1,13 @@
 from src.config import FOOTYSTATS_API_KEY
 from src.footystats import FootyStats
 from src.footystats_db import (
-    add_match_details_to_db,
     get_match_details_from_db,
     get_missing_match_ids,
     get_missing_team_ids,
     get_season_from_db,
     get_stats_from_db,
     get_team_from_db,
+    upser_match_details_to_db,
     upsert_season_to_db,
     upsert_stats_in_db,
     upsert_team_to_db,
@@ -50,7 +50,7 @@ def test_add_and_get_match_details():
     footy = FootyStats(FOOTYSTATS_API_KEY, 2)
     match_details = footy.get_match_details(579101)
 
-    add_match_details_to_db(match_details)
+    upser_match_details_to_db(match_details)
     details = get_match_details_from_db(match_details.id)
 
     assert details
@@ -60,7 +60,7 @@ def test_add_and_get_match_details():
 def test_get_missing_match_ids():
     footy = FootyStats(FOOTYSTATS_API_KEY, 2)
     details = footy.get_match_details(579190)
-    add_match_details_to_db(details)
+    upser_match_details_to_db(details)
 
     ids = get_missing_match_ids({1, 2, 3, 579190})
     assert ids == {1, 2, 3}

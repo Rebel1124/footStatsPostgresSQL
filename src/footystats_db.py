@@ -104,11 +104,11 @@ def get_match_details_from_db(match_id: int) -> MatchDetailsTuple | None:
             return MatchDetailsTuple(match_details, match.updated_at)
 
 
-def add_match_details_to_db(match: MatchDetails) -> None:
+def upser_match_details_to_db(match: MatchDetails) -> None:
     details = match.model_dump(mode="json", by_alias=True)
 
     with get_db() as db:
-        db.add(
+        db.merge(
             MatchDetailsDB(
                 match_id=match.id, details=details, updated_at=datetime.now(UTC)
             )

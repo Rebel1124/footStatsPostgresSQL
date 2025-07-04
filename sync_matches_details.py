@@ -4,7 +4,6 @@ from src.config import FOOTYSTATS_API_KEY, LEAGUES_NAMES
 from src.footystats import FootyStats
 from src.footystats_db import (
     add_match_details_to_db,
-    get_missing_match_ids,
     get_season_metadatas,
 )
 

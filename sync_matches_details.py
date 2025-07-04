@@ -14,9 +14,9 @@ def sync_matches_details():
     season_metadatas = get_season_metadatas(footy, LEAGUES_NAMES, last=1)
     for metadata in season_metadatas:
         matches = footy.get_league_matches(metadata.season_id)
-        match_ids = {m.id for m in matches[:10]}
-        missing_ids = get_missing_match_ids(match_ids)
-        for match_id in missing_ids:
+        match_ids = {m.id for m in matches}
+        # missing_ids = get_missing_match_ids(match_ids)
+        for match_id in match_ids:
             match_details = footy.get_match_details(match_id)
             add_match_details_to_db(match_details)
             logger.info(

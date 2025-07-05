@@ -10,7 +10,7 @@ from src.footystats_db import (
     upser_match_details_to_db,
 )
 
-MINUTES_GAP = int(os.environ["MINUTES_GAP"])
+SECONDS_GAP = float(os.environ["SECONDS_GAP"])
 
 
 def sync_matches_details():
@@ -27,7 +27,7 @@ def sync_matches_details():
                 match_id=match_id,
                 season_id=metadata.season_id,
             )
-        time.sleep(MINUTES_GAP * 60)
+            time.sleep(SECONDS_GAP)
 
 
 if __name__ == "__main__":

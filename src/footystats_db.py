@@ -54,16 +54,20 @@ class LeaguesNotFound(Exception):
 def get_season_metadatas(
     footy: FootyStats, league_names: Iterable[str], last: int = 1
 ) -> list[SeasonMetaData]:
+    """Ordered from newest to oldest."""
     league_names = set(league_names)
     leagues = footy.get_leagues()
+
     seasons: list[SeasonMetaData] = []
+
     for league in leagues:
         try:
             league_names.remove(league.name)
         except KeyError:
             continue
 
-        for season in league.season[-last:]:
+        league_seasons = sorted(league.season, key=lambda s: str(s.year))
+        for season in league_seasons[-last:]:
             if season.year is None:
                 continue
             metadata = SeasonMetaData(
@@ -75,6 +79,18 @@ def get_season_metadatas(
         raise LeaguesNotFound(league_names)
 
     return seasons
+
+
+def get_season_metadata_by_id(footy: FootyStats, id: int) -> SeasonMetaData | None:
+    leagues = footy.get_leagues()
+    for league in leagues:
+        for season in league.season:
+            if season.id == id:
+                return SeasonMetaData(
+                    season_id=season.id,
+                    season_year=season.year,
+                    league_name=league.name,
+                )
 
 
 def upsert_stats_in_db(btts: BttsStats, over_25: Over25Stats) -> None:

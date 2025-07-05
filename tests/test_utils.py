@@ -10,9 +10,11 @@ from src.footystats_db import (
 
 def test_get_season_metadatas():
     footy = FootyStats(FOOTYSTATS_API_KEY, 2)
-    seasons = get_season_metadatas(footy, {"Germany Bundesliga"}, 5)
-    assert len(seasons) == 5 * 1
+    seasons = get_season_metadatas(footy, {"Germany Bundesliga"}, 3)
+    assert len(seasons) == 3 * 1
     assert seasons[0].league_name == "Germany Bundesliga"
+
+    assert {s.season_year for s in seasons} == {"2024/2025", "2023/2024", "2022/2023"}
 
 
 def test_get_season_metadatas__not_found():

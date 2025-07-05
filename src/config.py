@@ -7,6 +7,8 @@ load_dotenv()
 FOOTYSTATS_API_KEY = os.environ["FOOTYSTATS_API_KEY"]
 DB_URL = os.environ["DB_URL"]
 
+# LEAGUES_NAMES = json.loads(os.environ["LEAGUES_NAMES"])
+
 LEAGUES_NAMES = [
     "Germany Bundesliga",
     "Europe UEFA Champions League",

@@ -5,11 +5,15 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "bs4[xpath]>=0.0.2",
     "dotenv>=0.9.9",
     "httpx>=0.28.1",
     "loguru>=0.7.3",
+    "lxml>=6.0.1",
     "pandas>=2.3.0",
-    "psycopg2-binary>=2.9.10",
+    "parsel>=1.10.0",
+    "playwright>=1.54.0",
+    "psycopg[binary]>=3.2.9",
     "pydantic>=2.11.5",
     "pydantic-settings>=2.9.1",
     "pyright>=1.1.402",
@@ -22,5 +26,9 @@ dependencies = [
 dev = [
     "pyright>=1.1.401",
     "pytest>=8.4.0",
+    "pytest-asyncio>=1.1.0",
     "ruff>=0.11.13",
 ]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"

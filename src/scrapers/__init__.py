@@ -1,9 +1,13 @@
 from contextlib import asynccontextmanager
-from typing import Annotated
+from datetime import datetime
+from typing import Annotated, Literal
+import ssl
+import asyncio
 
-from httpx import AsyncClient
+import httpx
 from playwright.async_api import async_playwright
 from pydantic import BaseModel, StringConstraints
+from loguru import logger
 
 StrTeamName = Annotated[
     str, StringConstraints(min_length=2, strip_whitespace=True, max_length=50)
@@ -17,6 +21,8 @@ class GameOdds(BaseModel):
     home_odds: float
     draw_odds: float
     away_odds: float
+
+    game_time: datetime
 
 
 HEADERS = {
@@ -38,13 +44,42 @@ HEADERS = {
 }
 
 
+ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+ssl_context.check_hostname = False
+ssl_context.verify_mode = ssl.CERT_NONE
+ssl_context.minimum_version = ssl.TLSVersion.TLSv1_3  # satisfy supersport bet
+
+
+class RetryAsyncClient(httpx.AsyncClient):
+    async def send(self, request: httpx.Request, **kwargs):
+        retries = 3
+
+        while True:
+            try:
+                resp = await super().send(request, **kwargs)
+                logger.trace("{} -> {}", request, resp)
+                return resp
+            except httpx.RequestError:
+                if retries == 0:
+                    raise
+                logger.debug(
+                    "Failed {} | Retries left {}",
+                    request,
+                    retries,
+                )
+                retries -= 1
+
+            await asyncio.sleep(3)
+
+
 @asynccontextmanager
 async def get_client():
-    async with AsyncClient(
+    async with RetryAsyncClient(
         headers=HEADERS,
         follow_redirects=True,
-        verify=False,
-        proxy="http://localhost:8080",
+        # proxy="http://localhost:8080",
+        transport=httpx.AsyncHTTPTransport(ssl_context),
+        timeout=10,
     ) as client:
         yield client
 

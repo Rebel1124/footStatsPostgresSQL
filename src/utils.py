@@ -1,5 +1,5 @@
 from collections.abc import Container
-from datetime import datetime
+from datetime import UTC, datetime, timedelta
 
 from src.footystats import FootyStats
 from src.schemes.season import Season, SeasonMetaData
@@ -43,3 +43,18 @@ def get_season_metadatas(
             seasons.append(season)
 
     return seasons
+
+
+EPOCH = datetime(1, 1, 1, 0, 0, 0, tzinfo=UTC)
+
+
+def ticks_to_datetime(ticks: int):
+    seconds = ticks // 10_000_000
+    return EPOCH + timedelta(seconds=seconds)
+
+
+def datetime_to_ticks(dt: datetime):
+    time_diff = dt - EPOCH
+    seconds = time_diff.total_seconds()
+    ticks = int(seconds * 10_000_000)
+    return ticks

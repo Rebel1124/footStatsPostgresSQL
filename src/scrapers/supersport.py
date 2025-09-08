@@ -1,35 +1,51 @@
-from httpx import AsyncClient
+from datetime import UTC
+
 import parsel
-from playwright.async_api import Page
-
-from . import GameOdds
 from dateutil.parser import parse
+from playwright import sync_api as playwright
+
+from src.config import SUPER_SPORT_BET_URLS, League
+
+from . import MatchOdds
 
 
-async def get_supersport_odds(client: AsyncClient, url: str) -> list[GameOdds]:
-    resp = await client.get(url)
-    resp.raise_for_status()
-    html = resp.content.decode()
-    return list(parse_supersport_odds(html))
-
-
-def parse_supersport_odds(html: str):
-    [container] = parsel.Selector(html).xpath(
-        "//div[./footer]/div[2]/section[2]/div/div"
+def get_super_sport_bet_odds(page: playwright.Page, league: League) -> list[MatchOdds]:
+    url = SUPER_SPORT_BET_URLS[league]
+    if url is None:
+        return []
+    page.goto(url)
+    page.wait_for_selector(
+        'section[data-app="EventsApp"]', timeout=90_000, state="attached"
     )
-    _, _, *games = container.xpath("./div")
+    html = page.content()
+    return list(parse_super_sport_odds(html))
+
+
+def parse_super_sport_odds(html: str):
+    root = parsel.Selector(html)
+    try:
+        [container] = root.xpath("//section[@data-app='EventsApp']/div/div")
+    except ValueError:
+        if len(root.xpath("//section[@data-app='EventsApp']")) == 1:
+            return []
+        raise
+
+    games = container.xpath("./div[not(@class)]")
 
     for game in games:
+        [raw_time] = game.xpath("./div[2]/p/text()").getall()
+        if raw_time == "Live":
+            continue
+
         home_team, away_team = game.xpath(".//a//span/text()").getall()
         home, draw, away, *_ = game.xpath(".//button//text()").getall()
-        [raw_time] = game.xpath("./div[2]/p/text()").getall()
-        game_time = parse(raw_time)
+        game_time = parse(raw_time).astimezone(UTC)
 
-        yield GameOdds(
+        yield MatchOdds(
             home_team=home_team,
             away_team=away_team,
             home_odds=home,  # type: ignore
             draw_odds=draw,  # type: ignore
             away_odds=away,  # type: ignore
-            game_time=game_time,
+            start_at=game_time,
         )

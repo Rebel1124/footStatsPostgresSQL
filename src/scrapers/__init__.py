@@ -1,28 +1,40 @@
-from contextlib import asynccontextmanager
-from datetime import datetime
-from typing import Annotated, Literal
 import ssl
-import asyncio
+from contextlib import contextmanager
+from enum import Enum
+from time import sleep
+from typing import Annotated
 
 import httpx
-from playwright.async_api import async_playwright
-from pydantic import BaseModel, StringConstraints
 from loguru import logger
+from playwright.sync_api import sync_playwright
+from playwright_stealth import Stealth
+from pydantic import AwareDatetime, BaseModel, StringConstraints
 
-StrTeamName = Annotated[
-    str, StringConstraints(min_length=2, strip_whitespace=True, max_length=50)
+type StrTeamName = Annotated[
+    str,
+    StringConstraints(
+        min_length=2, strip_whitespace=True, max_length=100, to_lower=True
+    ),
 ]
 
 
-class GameOdds(BaseModel):
+class Bookmaker(Enum):
+    SUPER_SPORT_BET = "supersportbet.com"
+    BET_WAY = "betway.co.za"
+    HOLLYWOOD_BETS = "hollywoodbets.net"
+    BET_10 = "10bet.co.za"
+    SPORTING_BET = "sportingbet.co.za"
+    SUPA_BETS = "supabets.co.za"
+
+
+class MatchOdds(BaseModel):
     home_team: StrTeamName
     away_team: StrTeamName
+    start_at: AwareDatetime
 
     home_odds: float
     draw_odds: float
     away_odds: float
-
-    game_time: datetime
 
 
 HEADERS = {
@@ -34,7 +46,11 @@ HEADERS = {
     "Priority": "u=0, i",
     "Sec-Ch-Ua": '"Not)A;Brand";v="8", "Chromium";v="138"',
     "Sec-Ch-Ua-Mobile": "?0",
-    "Sec-Ch-Ua-Platform": '"macOS"',
+    "Sec-Ch-Ua-Platform": "macOS",
+    "Sec-Ch-Ua-Platform-version": "15.5.0",
+    "Sec-Ch-Ua-Model": "",
+    "Sec-Ch-Ua-Bitness": "64",
+    "Sec-Ch-Ua-Full-Version-List": 'Not.A/Brand";v="99.0.0.0", "Chromium";v="136.0.7103.114"',
     "Sec-Fetch-Dest": "document",
     "Sec-Fetch-Mode": "navigate",
     "Sec-Fetch-Site": "same-origin",
@@ -50,13 +66,13 @@ ssl_context.verify_mode = ssl.CERT_NONE
 ssl_context.minimum_version = ssl.TLSVersion.TLSv1_3  # satisfy supersport bet
 
 
-class RetryAsyncClient(httpx.AsyncClient):
-    async def send(self, request: httpx.Request, **kwargs):
+class RetryClient(httpx.Client):
+    def send(self, request: httpx.Request, **kwargs):
         retries = 3
 
         while True:
             try:
-                resp = await super().send(request, **kwargs)
+                resp = super().send(request, **kwargs)
                 logger.trace("{} -> {}", request, resp)
                 return resp
             except httpx.RequestError:
@@ -69,24 +85,34 @@ class RetryAsyncClient(httpx.AsyncClient):
                 )
                 retries -= 1
 
-            await asyncio.sleep(3)
+            sleep(2)
 
 
-@asynccontextmanager
-async def get_client():
-    async with RetryAsyncClient(
+@contextmanager
+def get_http_client():
+    with RetryClient(
         headers=HEADERS,
         follow_redirects=True,
         # proxy="http://localhost:8080",
-        transport=httpx.AsyncHTTPTransport(ssl_context),
+        # verify=False,
+        transport=httpx.HTTPTransport(ssl_context),
         timeout=10,
     ) as client:
         yield client
 
 
-@asynccontextmanager
-async def get_browser_context():
-    async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True)
-        context = await browser.new_context(extra_http_headers=HEADERS)
+@contextmanager
+def get_browser_context():
+    with Stealth().use_sync(sync_playwright()) as p:
+        browser = p.chromium.launch(
+            headless=False,
+            # executable_path="/usr/bin/chromium",
+            args=[
+                # "--disable-gpu",
+                "--headless",
+            ],
+            # proxy=ProxySettings(server="localhost:8080"),
+        )
+        context = browser.new_context()
+
         yield context

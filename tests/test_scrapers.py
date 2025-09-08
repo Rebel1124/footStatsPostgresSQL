@@ -1,34 +1,20 @@
 import pytest
 
-from src.scrapers import get_browser_context, get_client
-from src.scrapers.betway import get_betway_odds
-from src.scrapers.supersport import get_supersport_odds
+from src.config import League
+from src.scrapers import Bookmaker, get_browser_context, get_http_client
+from src.scrapers.all import aggregate_match_odds, get_league_matches_odds
 
 
-@pytest.fixture
-async def client():
-    async with get_client() as c:
-        yield c
+@pytest.mark.parametrize("league", [League.ENGLAND_CHAMPIONSHIP])
+def test_get_league_matches_odds_and_aggregate_them(league):
+    with get_browser_context() as context:
+        page = context.new_page()
+        with get_http_client() as client:
+            res = get_league_matches_odds(client, page, league)
 
+    assert set(res) == set(Bookmaker)
+    aggregated_matches_odds = list(aggregate_match_odds(res, league))
+    assert len(aggregated_matches_odds) == len(res[Bookmaker.BET_10])
 
-async def test_get_supersport_odds(client):
-    url = "https://supersportbet.com/sportsbook/soccer/german-bundesliga-209/"
-    odds = await get_supersport_odds(client, url)
-    assert odds
-
-
-async def test_get_betway_odds(client):
-    urls = [
-        "https://new.betway.co.za/sport/soccer?sortOrder=League&selectedLeagues=germany_bundesliga",
-        # "https://new.betway.co.za/sport/soccer?sortOrder=League&selectedLeagues=international-clubs_uefa-champions-league",
-        "https://new.betway.co.za/sport/soccer?sortOrder=League&selectedLeagues=england_premier-league",
-        "https://new.betway.co.za/sport/soccer?sortOrder=League&selectedLeagues=england_championship",
-        "https://new.betway.co.za/sport/soccer?sortOrder=League&selectedLeagues=spain_la-liga",
-        "https://new.betway.co.za/sport/soccer?sortOrder=League&selectedLeagues=france_ligue-1",
-        "https://new.betway.co.za/sport/soccer?sortOrder=League&selectedLeagues=italy_serie-a",
-        "https://new.betway.co.za/sport/soccer?sortOrder=League&selectedLeagues=south-africa_premiership",
-        "https://new.betway.co.za/sport/soccer?sortOrder=League&selectedLeagues=international-clubs_uefa-europa-league",
-    ]
-    for url in urls:
-        odds = await get_betway_odds(client, url)
-        assert odds, url
+    for odds in aggregated_matches_odds:
+        assert set(odds.odds) == set(Bookmaker)

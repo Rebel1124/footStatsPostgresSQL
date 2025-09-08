@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Annotated
 
-from sqlalchemy import JSON, TIMESTAMP, create_engine
+from sqlalchemy import JSON, TIMESTAMP, UniqueConstraint, create_engine
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 
 from src.config import DB_URL
@@ -38,8 +38,6 @@ class SeasonDB(BaseDB):
     league_referees: Mapped[dict] = mapped_column(JSON)
     league_tables: Mapped[dict] = mapped_column(JSON)
 
-    updated_at: Mapped[UpdatedAt]
-
 
 class MatchDetailsDB(BaseDB):
     __tablename__ = "footystats_match_details"
@@ -68,3 +66,41 @@ class StatsDB(BaseDB):
     over25_stats: Mapped[dict] = mapped_column(JSON)
 
     updated_at: Mapped[UpdatedAt]
+
+
+class MatchBetOddsDB(BaseDB):
+    __tablename__ = "matches_bet_odds"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+
+    date: Mapped[datetime] = mapped_column(TIMESTAMP(True))
+    home_team: Mapped[str] = mapped_column()
+    away_team: Mapped[str]
+    league_name: Mapped[str]
+    updated_at: Mapped[UpdatedAt]
+
+    supersport_1: Mapped[float | None]
+    supersport_x: Mapped[float | None]
+    supersport_2: Mapped[float | None]
+
+    betway_1: Mapped[float | None]
+    betway_x: Mapped[float | None]
+    betway_2: Mapped[float | None]
+
+    hollywood_1: Mapped[float | None]
+    hollywood_x: Mapped[float | None]
+    hollywood_2: Mapped[float | None]
+
+    bet10_1: Mapped[float | None]
+    bet10_x: Mapped[float | None]
+    bet10_2: Mapped[float | None]
+
+    sportingbet_1: Mapped[float | None]
+    sportingbet_x: Mapped[float | None]
+    sportingbet_2: Mapped[float | None]
+
+    supabets_1: Mapped[float | None]
+    supabets_x: Mapped[float | None]
+    supabets_2: Mapped[float | None]
+
+    __table_args__ = (UniqueConstraint(home_team, date),)

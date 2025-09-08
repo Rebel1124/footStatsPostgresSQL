@@ -251,14 +251,14 @@ class FootyStats:
         )
         resp.raise_for_status()
         body = resp.json()
-        contries = [Country.model_validate(country) for country in body["data"]]
-        return contries, body
+        countries = [Country.model_validate(country) for country in body["data"]]
+        return countries, body
 
     def _get_all_data[**P, T](
         self,
         get_data_and_body: Callable[
             Concatenate[int, P], tuple[list[T], Any]
-        ],  # oh my god, this type actualy works!
+        ],  # oh my god, this type actually works!
         *args: P.args,
         **kwargs: P.kwargs,
     ) -> list[T]:

@@ -1,24 +1,19 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Literal
-from _pytest import outcomes
-import parsel
-from playwright.async_api import Page
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import parse_qs, urlparse
 
 import httpx
 from pydantic import BaseModel
 
-from src.config import LeagueName
-from . import GameOdds
+from src.config import BET_WAY_URLS, League
+
+from . import MatchOdds
 
 
-async def get_betway_odds(
-    client: httpx.AsyncClient,
-    url: str,
-) -> list[GameOdds]:
-    region, league = url.split("=")[-1].split("_")
+def get_bet_way_odds(client: httpx.Client, league: League) -> list[MatchOdds]:
+    url = BET_WAY_URLS[league]
     parsed_params = parse_qs(urlparse(url).query)
-    region, league = parsed_params["selectedLeagues"][0].split("_")
+    region, _league = parsed_params["selectedLeagues"][0].split("_")
     sort_order = parsed_params["sortOrder"]
 
     api_url = "https://new.betway.co.za/sportsapi/br/v1/BetBook/Filtered/"
@@ -33,9 +28,9 @@ async def get_betway_odds(
         "SortOrder": sort_order,
         "marketTypes": ["[Win/Draw/Win]"],
         "RegionAndLeagueIds[0].regionId": region,
-        "RegionAndLeagueIds[0].leagueId": league,
+        "RegionAndLeagueIds[0].leagueId": _league,
     }
-    resp = await client.get(api_url, params=params)
+    resp = client.get(api_url, params=params)
     resp.raise_for_status()
     data = BetWayResp.model_validate(resp.json())
     return list(parse_betway_odds(data))
@@ -85,13 +80,13 @@ def parse_betway_odds(data: BetWayResp):
             o.outcomeId for o in data.outcomes if o.marketId == market.marketId
         )
 
-        game_time = datetime.fromtimestamp(event.expectedStartEpoch)
+        game_time = datetime.fromtimestamp(event.expectedStartEpoch, UTC)
 
-        yield GameOdds(
+        yield MatchOdds(
             home_team=event.homeTeam,
             away_team=event.awayTeam,
             home_odds=outcomes_prices[home_outcome_id].priceDecimal,
             draw_odds=outcomes_prices[draw_outcome_id].priceDecimal,
             away_odds=outcomes_prices[away_outcome_id].priceDecimal,
-            game_time=game_time,
+            start_at=game_time,
         )

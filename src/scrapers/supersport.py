@@ -9,11 +9,41 @@ from src.config import SUPER_SPORT_BET_URLS, League
 from . import MatchOdds
 
 
-def get_super_sport_bet_odds(page: playwright.Page, league: League) -> list[MatchOdds]:
+class BlockedByWebsite(Exception):
+    pass
+
+
+def get_super_sport_bet_odds(
+    page: playwright.Page,
+    league: League,
+) -> list[MatchOdds]:
     url = SUPER_SPORT_BET_URLS[league]
     if url is None:
         return []
-    page.goto(url)
+
+    retries = 2
+
+    def fail(reason: str):
+        nonlocal retries
+        if not retries:
+            raise BlockedByWebsite(reason)
+        retries -= 1
+
+    while True:
+        page.goto(url)
+
+        title = page.locator("title").text_content()
+        if title == "Access Restricted":
+            fail("Region Access Restriction")
+            continue
+
+        block_headline = page.query_selector('h1[data-translate="block_headline"]')
+        if block_headline:
+            fail("Banned IP")
+            continue
+
+        break
+
     page.wait_for_selector(
         'section[data-app="EventsApp"]', timeout=90_000, state="attached"
     )

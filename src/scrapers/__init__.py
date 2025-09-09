@@ -108,7 +108,12 @@ def get_browser_context():
     with Stealth().use_sync(sync_playwright()) as p:
         browser = p.chromium.launch(
             executable_path=CHROMIUM_PATH,
-            args=["--disable-gpu", "--no-sandbox", "--headless"],
+            headless=False,
+            args=[
+                "--disable-gpu",
+                "--no-sandbox",
+                # "--headless",
+            ],
             # proxy=ProxySettings(server="localhost:8080"),
         )
         context = browser.new_context()

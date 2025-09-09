@@ -1,3 +1,4 @@
+from loguru import logger
 from src.config import FOOTYSTATS_API_KEY
 from src.footystats import FootyStats
 from src.footystats_db import (
@@ -10,6 +11,8 @@ def sync_stats():
     btts = footy.get_btts_stats()
     over25 = footy.get_over25_stats()
     upsert_stats_in_db(btts, over25)
+
+    logger.info("btts and over25 stats updated")
 
 
 if __name__ == "__main__":

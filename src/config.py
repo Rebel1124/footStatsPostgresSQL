@@ -7,6 +7,7 @@ load_dotenv()
 
 FOOTYSTATS_API_KEY = os.environ["FOOTYSTATS_API_KEY"]
 DB_URL = os.environ["DB_URL"]
+CHROMIUM_PATH = os.environ.get("CHROMIUM_PATH", None)
 
 
 class League(StrEnum):

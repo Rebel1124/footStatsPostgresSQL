@@ -10,6 +10,8 @@ from playwright.sync_api import sync_playwright
 from playwright_stealth import Stealth
 from pydantic import AwareDatetime, BaseModel, StringConstraints
 
+from src.config import CHROMIUM_PATH
+
 type StrTeamName = Annotated[
     str,
     StringConstraints(
@@ -105,12 +107,8 @@ def get_http_client():
 def get_browser_context():
     with Stealth().use_sync(sync_playwright()) as p:
         browser = p.chromium.launch(
-            headless=False,
-            # executable_path="/usr/bin/chromium",
-            args=[
-                # "--disable-gpu",
-                "--headless",
-            ],
+            executable_path=CHROMIUM_PATH,
+            args=["--disable-gpu", "--no-sandbox", "--headless"],
             # proxy=ProxySettings(server="localhost:8080"),
         )
         context = browser.new_context()

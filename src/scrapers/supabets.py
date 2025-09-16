@@ -7,23 +7,24 @@ from pydantic import AliasPath, BaseModel, Field, field_validator
 from src.config import SUPA_BETS_LEAGUE_IDS, League
 from src.utils import datetime_to_ticks
 
-from . import MatchOdds
+from . import MatchOdds, get_http_client
 
 
-def get_supa_bets_odds(client: httpx.Client, league: League) -> list[MatchOdds]:
+def get_supa_bets_odds(league: League) -> list[MatchOdds]:
     league_id = SUPA_BETS_LEAGUE_IDS[league]
     today = datetime.today().replace(tzinfo=UTC)
-    resp = client.post(
-        "https://www.supabets.co.za/Controls/ControlsWS.asmx/OddsViewFullEvent",
-        json={
-            "IDEvento": league_id,
-            "IDGruppoQuota": -1,
-            "IsGoalscorer": False,
-            "TipoVisualizzazione": 1,
-            "DataInizio": datetime_to_ticks(today),
-            "DataFine": datetime_to_ticks(today + timedelta(days=7)),
-        },
-    )
+    with get_http_client() as client:
+        resp = client.post(
+            "https://www.supabets.co.za/Controls/ControlsWS.asmx/OddsViewFullEvent",
+            json={
+                "IDEvento": league_id,
+                "IDGruppoQuota": -1,
+                "IsGoalscorer": False,
+                "TipoVisualizzazione": 1,
+                "DataInizio": datetime_to_ticks(today),
+                "DataFine": datetime_to_ticks(today + timedelta(days=7)),
+            },
+        )
     resp.raise_for_status()
     data = SupabetsData.model_validate(resp.json())
     return list(parse_supa_bets_odds(data))

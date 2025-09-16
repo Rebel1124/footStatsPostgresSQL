@@ -7,7 +7,12 @@ load_dotenv()
 
 FOOTYSTATS_API_KEY = os.environ["FOOTYSTATS_API_KEY"]
 DB_URL = os.environ["DB_URL"]
-CHROMIUM_PATH = os.environ.get("CHROMIUM_PATH", None)
+
+CHROMIUM_PATH = os.environ.get("CHROMIUM_PATH")
+HEADLESS_BROWSER = bool(int(os.environ.get("HEADLESS_BROWSER", 1)))
+PROXY_URL = os.environ.get("PROXY_URL")
+PROXY_USERNAME = os.environ.get("PROXY_USERNAME")
+PROXY_PASSWORD = os.environ.get("PROXY_PASSWORD")
 
 
 class League(StrEnum):

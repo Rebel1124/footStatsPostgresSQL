@@ -7,10 +7,10 @@ from pydantic import AliasPath, BaseModel, Field
 
 from src.config import SPORTING_BET_URLS, League
 
-from . import MatchOdds
+from . import MatchOdds, get_http_client
 
 
-def get_sporting_bet_access_id(client: httpx.Client) -> str:
+def _get_sporting_bet_access_id(client: httpx.Client) -> str:
     resp = client.get(
         "https://www.sportingbet.co.za/en/api/clientconfig",
         headers={"x-bwin-sports-api": "prod"},
@@ -27,25 +27,53 @@ class ClientConfigResp(BaseModel):
     msConnection: _Connection
 
 
+HEADERS = {
+    "sec-ch-ua-platform": '"macOS"',
+    "x-correlation-id": "598cf002a3b040bea1478c2fa1b8f945",
+    "sec-ch-ua": '"Not=A?Brand";v="24", "Chromium";v="140"',
+    "sec-ch-ua-mobile": "?0",
+    "x-from-product": "host-app",
+    "x-device-type": "desktop",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36",
+    "accept": "application/json, text/plain, */*",
+    "dnt": "1",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "accept-language": "en-US,en;q=0.9",
+    "priority": "u=4, i",
+}
+
+
 def get_sporting_bet_odds(
-    client: httpx.Client, league: League, *, access_id: str
+    league: League,
 ) -> list[MatchOdds]:
     url = SPORTING_BET_URLS[league]
     competition_id = int(urlparse(url).path.removesuffix("/").split("-")[-1])
-    resp = client.get(
-        "https://www.sportingbet.co.za/cds-api/bettingoffer/fixtures",
-        params={
-            "userCountry": "HR",
-            "country": "HR",
-            "x-bwin-accessid": access_id,
-            "lang": "en",
-            "fixtureTypes": "Standard",
-            "state": "Latest",
-            "offerMapping": "MainMarkets",
-            "sortBy": "FixtureStage",
-            "competitionIds": competition_id,
-        },
-    )
+    with get_http_client() as client:
+        access_id = _get_sporting_bet_access_id(client)
+        resp = client.get(
+            "https://www.sportingbet.co.za/cds-api/bettingoffer/fixtures",
+            params={
+                "userCountry": "ZA",
+                "country": "ZA",
+                "x-bwin-accessid": access_id,
+                "lang": "en",
+                "fixtureTypes": "Standard",
+                "state": "Latest",
+                "offerMapping": "MainMarkets",
+                "sortBy": "FixtureStage",
+                "competitionIds": competition_id,
+                "skip": 0,
+                "take": 50,
+            },
+            headers={
+                **HEADERS,
+                "x-bwin-browser-url": url,
+                "referer": url,
+            },
+        )
+    # open("resp.html", "w").write(resp.content.decode())
     resp.raise_for_status()
     data = SportingBetResp.model_validate(resp.json())
     return list(parse_sporting_bet_odds(data))

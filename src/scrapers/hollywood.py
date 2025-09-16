@@ -7,10 +7,10 @@ from pydantic import BaseModel
 
 from src.config import HOOLYWOOD_BET_URLS, League
 
-from . import MatchOdds
+from . import MatchOdds, get_http_client
 
 
-def get_hollywood_bets_odds(client: httpx.Client, league: League) -> list[MatchOdds]:
+def get_hollywood_bets_odds(league: League) -> list[MatchOdds]:
     url = HOOLYWOOD_BET_URLS[league]
     parts = [p for p in urlparse(url).path.split("/") if p != ""]
 
@@ -18,7 +18,8 @@ def get_hollywood_bets_odds(client: httpx.Client, league: League) -> list[MatchO
     _, sport_id, _, _, category_id, _, tournament_id, _ = parts
 
     url = f"https://sport-events-api.hollywoodbets.net/api/events/eps/sports/{sport_id}/categories/{category_id}/tournaments/{tournament_id}/events?withBetTypeId=15"
-    resp = client.get(url)
+    with get_http_client() as client:
+        resp = client.get(url)
     resp.raise_for_status()
     data = SportEventsResp.model_validate(resp.json())
     return list(parse_hollywodd_bets_odds(data))

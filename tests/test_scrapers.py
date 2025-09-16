@@ -7,10 +7,7 @@ from src.scrapers.all import aggregate_match_odds, get_league_matches_odds
 
 @pytest.mark.parametrize("league", [League.ENGLAND_CHAMPIONSHIP])
 def test_get_league_matches_odds_and_aggregate_them(league):
-    with get_browser_context() as context:
-        page = context.new_page()
-        with get_http_client() as client:
-            res = get_league_matches_odds(client, page, league)
+    res = get_league_matches_odds(league)
 
     assert set(res) == set(Bookmaker)
     aggregated_matches_odds = list(aggregate_match_odds(res, league))

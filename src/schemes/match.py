@@ -71,7 +71,7 @@ class Match(StrictBaseModel):
     odds_corners_under_95: float
     odds_corners_over_115: float
     team_b_fh_corners: int
-    odds_dnb_2: int
+    odds_dnb_2: float
     corner_fh_count: int
     attacks_recorded: int
     team_a_xg: float
@@ -163,7 +163,7 @@ class Match(StrictBaseModel):
     odds_1st_half_under05: float
     team_b_throwins: int
     goals_2hg_team_b: int
-    odds_dnb_1: int
+    odds_dnb_1: float
     pre_match_home_ppg: float
     odds_ft_under25: float
     team_b_2h_cards: int

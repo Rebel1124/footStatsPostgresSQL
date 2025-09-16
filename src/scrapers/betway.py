@@ -7,10 +7,10 @@ from pydantic import BaseModel
 
 from src.config import BET_WAY_URLS, League
 
-from . import MatchOdds
+from . import MatchOdds, get_http_client
 
 
-def get_bet_way_odds(client: httpx.Client, league: League) -> list[MatchOdds]:
+def get_bet_way_odds(league: League) -> list[MatchOdds]:
     url = BET_WAY_URLS[league]
     parsed_params = parse_qs(urlparse(url).query)
     region, _league = parsed_params["selectedLeagues"][0].split("_")
@@ -30,7 +30,8 @@ def get_bet_way_odds(client: httpx.Client, league: League) -> list[MatchOdds]:
         "RegionAndLeagueIds[0].regionId": region,
         "RegionAndLeagueIds[0].leagueId": _league,
     }
-    resp = client.get(api_url, params=params)
+    with get_http_client() as client:
+        resp = client.get(api_url, params=params)
     resp.raise_for_status()
     data = BetWayResp.model_validate(resp.json())
     return list(parse_betway_odds(data))

@@ -30,16 +30,16 @@ def get_super_sport_bet_odds(
         retries -= 1
 
     while True:
-        page.goto(url)
+        page.goto(url, timeout=30_000)
 
         title = page.locator("title").text_content()
         if title == "Access Restricted":
-            fail("Region Access Restriction")
+            fail("Access Restriction")
             continue
 
         block_headline = page.query_selector('h1[data-translate="block_headline"]')
         if block_headline:
-            fail("Banned IP")
+            fail("Sorry, you have been blocked")
             continue
 
         break
@@ -48,19 +48,14 @@ def get_super_sport_bet_odds(
         'section[data-app="EventsApp"]', timeout=90_000, state="attached"
     )
     html = page.content()
+    page.goto("about:blank")
     return list(parse_super_sport_odds(html))
 
 
 def parse_super_sport_odds(html: str):
     root = parsel.Selector(html)
-    try:
-        [container] = root.xpath("//section[@data-app='EventsApp']/div/div")
-    except ValueError:
-        if len(root.xpath("//section[@data-app='EventsApp']")) == 1:
-            return []
-        raise
-
-    games = container.xpath("./div[not(@class)]")
+    containers = root.xpath("//section[@data-app='EventsApp']/div/div")
+    games = containers[-1].xpath("./div[not(@class)]")
 
     for game in games:
         [raw_time] = game.xpath("./div[2]/p/text()").getall()

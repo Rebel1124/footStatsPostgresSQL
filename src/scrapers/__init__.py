@@ -1,3 +1,4 @@
+import random
 import ssl
 from contextlib import contextmanager
 from enum import Enum
@@ -7,8 +8,6 @@ from typing import Annotated
 import httpx
 from loguru import logger
 from playwright.sync_api import ProxySettings, sync_playwright
-from playwright_stealth import Stealth
-from playwright_stealth.stealth import random
 from pydantic import AwareDatetime, BaseModel, StringConstraints
 
 from src.config import (

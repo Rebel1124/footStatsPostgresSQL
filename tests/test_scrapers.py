@@ -1,7 +1,7 @@
 import pytest
 
 from src.config import League
-from src.scrapers import Bookmaker, get_browser_context, get_http_client
+from src.scrapers import Bookmaker
 from src.scrapers.all import aggregate_match_odds, get_league_matches_odds
 
 

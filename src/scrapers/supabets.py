@@ -1,7 +1,6 @@
 import re
 from datetime import UTC, datetime, timedelta
 
-import httpx
 from pydantic import AliasPath, BaseModel, Field, field_validator
 
 from src.config import SUPA_BETS_LEAGUE_IDS, League

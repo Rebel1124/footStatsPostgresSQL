@@ -1,4 +1,5 @@
-from datetime import UTC
+from datetime import UTC, tzinfo
+from zoneinfo import ZoneInfo
 
 import parsel
 from dateutil.parser import parse
@@ -30,7 +31,7 @@ def get_super_sport_bet_odds(
         retries -= 1
 
     while True:
-        page.goto(url, timeout=30_000)
+        page.goto(url, timeout=60_000)
 
         title = page.locator("title").text_content()
         if title == "Access Restricted":
@@ -48,11 +49,13 @@ def get_super_sport_bet_odds(
         'section[data-app="EventsApp"]', timeout=90_000, state="attached"
     )
     html = page.content()
+    tz_str = page.evaluate("Intl.DateTimeFormat().resolvedOptions().timeZone")
+    print(tz_str)
     page.goto("about:blank")
-    return list(parse_super_sport_odds(html))
+    return list(parse_super_sport_odds(html, ZoneInfo(tz_str)))
 
 
-def parse_super_sport_odds(html: str):
+def parse_super_sport_odds(html: str, browser_tz: tzinfo):
     root = parsel.Selector(html)
     containers = root.xpath("//section[@data-app='EventsApp']/div/div")
     games = containers[-1].xpath("./div[not(@class)]")
@@ -64,7 +67,9 @@ def parse_super_sport_odds(html: str):
 
         home_team, away_team = game.xpath(".//a//span/text()").getall()
         home, draw, away, *_ = game.xpath(".//button//text()").getall()
-        game_time = parse(raw_time).astimezone(UTC)
+
+        # be sure that datetime is initially UTC
+        game_time = parse(raw_time).replace(tzinfo=browser_tz).astimezone(UTC)
 
         yield MatchOdds(
             home_team=home_team,

@@ -2,7 +2,6 @@ from datetime import datetime
 from typing import Literal
 from urllib.parse import urlparse
 
-import httpx
 from pydantic import BaseModel
 
 from src.config import HOOLYWOOD_BET_URLS, League

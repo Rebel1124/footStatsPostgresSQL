@@ -3,8 +3,6 @@ from collections import defaultdict
 from collections.abc import Iterable
 from datetime import UTC, datetime
 
-from time import sleep
-import httpx
 from loguru import logger
 from playwright import sync_api as playwright
 from pydantic import ValidationError
@@ -17,7 +15,7 @@ from src.scrapers import Bookmaker, MatchOdds, get_browser_context
 from src.scrapers.bet10 import get_bet_10_odds
 from src.scrapers.betway import get_bet_way_odds
 from src.scrapers.hollywood import get_hollywood_bets_odds
-from src.scrapers.sportingbet import _get_sporting_bet_access_id, get_sporting_bet_odds
+from src.scrapers.sportingbet import get_sporting_bet_odds
 from src.scrapers.supabets import get_supa_bets_odds
 from src.scrapers.supersport import get_super_sport_bet_odds
 

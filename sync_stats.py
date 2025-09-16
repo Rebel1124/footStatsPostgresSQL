@@ -1,4 +1,5 @@
 from loguru import logger
+
 from src.config import FOOTYSTATS_API_KEY
 from src.footystats import FootyStats
 from src.footystats_db import (

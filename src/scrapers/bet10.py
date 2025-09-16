@@ -1,7 +1,6 @@
 from datetime import datetime
 from typing import Literal
 
-import httpx
 from pydantic import BaseModel
 
 from src.config import BET_10_LEAGUE_IDS, League

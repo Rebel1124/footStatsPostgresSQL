@@ -2,7 +2,6 @@ from datetime import UTC, datetime
 from typing import Literal
 from urllib.parse import parse_qs, urlparse
 
-import httpx
 from pydantic import BaseModel
 
 from src.config import BET_WAY_URLS, League

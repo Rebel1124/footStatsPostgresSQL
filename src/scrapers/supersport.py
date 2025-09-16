@@ -50,7 +50,6 @@ def get_super_sport_bet_odds(
     )
     html = page.content()
     tz_str = page.evaluate("Intl.DateTimeFormat().resolvedOptions().timeZone")
-    print(tz_str)
     page.goto("about:blank")
     return list(parse_super_sport_odds(html, ZoneInfo(tz_str)))
 

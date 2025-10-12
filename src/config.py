@@ -120,3 +120,16 @@ SUPA_BETS_LEAGUE_IDS: dict[League, int] = {
     League.EUROPE_UEFA_EUROPA_LEAGUE: 990760,
     League.SOUTH_AFRICA_NATIONAL_FIRST_DIVISION: 991050,
 }
+
+PINNACLE_URLS: dict[League, str | None] = {
+    League.GERMANY_BUNDESLIGA: "https://www.pinnacle.com/en/soccer/germany-bundesliga/matchups/#all",
+    League.EUROPE_UEFA_CHAMPIONS_LEAGUE: "https://www.pinnacle.com/en/soccer/uefa-champions-league/matchups/#all",
+    League.ENGLAND_PREMIER_LEAGUE: "https://www.pinnacle.com/en/soccer/england-premier-league/matchups/#all",
+    League.ENGLAND_CHAMPIONSHIP: "https://www.pinnacle.com/en/soccer/england-championship/matchups/#all",
+    League.SPAIN_LA_LIGA: "https://www.pinnacle.com/en/soccer/spain-la-liga/matchups/#all",
+    League.FRANCE_LIGUE_1: "https://www.pinnacle.com/en/soccer/france-ligue-1/matchups/#all",
+    League.ITALY_SERIE_A: "https://www.pinnacle.com/en/soccer/italy-serie-a/matchups/#all",
+    League.SOUTH_AFRICA_PREMIER_SOCCER_LEAGUE: "https://www.pinnacle.com/en/soccer/south-africa-psl/matchups/#all",
+    League.EUROPE_UEFA_EUROPA_LEAGUE: "https://www.pinnacle.com/en/soccer/uefa-europa-league/matchups/#all",
+    League.SOUTH_AFRICA_NATIONAL_FIRST_DIVISION: None,
+}

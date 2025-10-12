@@ -55,6 +55,10 @@ def upsert_matches_bet_odds(
                 MatchBetOddsDB.supabets_1: get_odds(Bookmaker.SUPA_BETS).home,
                 MatchBetOddsDB.supabets_x: get_odds(Bookmaker.SUPA_BETS).draw,
                 MatchBetOddsDB.supabets_2: get_odds(Bookmaker.SUPA_BETS).away,
+                # ---
+                MatchBetOddsDB.pinnacle_1: get_odds(Bookmaker.SUPA_BETS).home,
+                MatchBetOddsDB.pinnacle_x: get_odds(Bookmaker.SUPA_BETS).draw,
+                MatchBetOddsDB.pinnacle_2: get_odds(Bookmaker.SUPA_BETS).away,
             }
         )
 

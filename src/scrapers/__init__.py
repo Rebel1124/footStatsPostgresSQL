@@ -33,6 +33,7 @@ class Bookmaker(Enum):
     BET_10 = "10bet.co.za"
     SPORTING_BET = "sportingbet.co.za"
     SUPA_BETS = "supabets.co.za"
+    PINNACLE = "pinnacle.com"
 
 
 class MatchOdds(BaseModel):
@@ -153,6 +154,7 @@ def get_browser_context():
             headless=HEADLESS_BROWSER,
             executable_path=CHROMIUM_PATH,
             args=[
+                "--disable-web-security",
                 "--disable-gpu",
                 "--no-sandbox",
                 "--disable-automation",  # Disables the automation flag

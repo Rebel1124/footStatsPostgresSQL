@@ -103,4 +103,8 @@ class MatchBetOddsDB(BaseDB):
     supabets_x: Mapped[float | None]
     supabets_2: Mapped[float | None]
 
+    pinnacle_1: Mapped[float | None]
+    pinnacle_x: Mapped[float | None]
+    pinnacle_2: Mapped[float | None]
+
     __table_args__ = (UniqueConstraint(home_team, date),)

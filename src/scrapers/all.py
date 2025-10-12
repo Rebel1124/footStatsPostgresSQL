@@ -2,6 +2,7 @@ import difflib
 from collections import defaultdict
 from collections.abc import Iterable
 from datetime import UTC, datetime
+from typing import assert_never
 
 from loguru import logger
 from playwright import sync_api as playwright
@@ -15,6 +16,7 @@ from src.scrapers import Bookmaker, MatchOdds, get_browser_context
 from src.scrapers.bet10 import get_bet_10_odds
 from src.scrapers.betway import get_bet_way_odds
 from src.scrapers.hollywood import get_hollywood_bets_odds
+from src.scrapers.pinnacle import get_pinnacle_odds
 from src.scrapers.sportingbet import get_sporting_bet_odds
 from src.scrapers.supabets import get_supa_bets_odds
 from src.scrapers.supersport import get_super_sport_bet_odds
@@ -79,8 +81,10 @@ def get_bet_odds(
                 return get_sporting_bet_odds(league)
             case Bookmaker.SUPA_BETS:
                 return get_supa_bets_odds(league)
+            case Bookmaker.PINNACLE:
+                return get_pinnacle_odds(page, league)
             case _:
-                raise ValueError(f"Not supported bookmaker {bookmaker}")
+                assert_never(bookmaker)
     except Exception as e:
         if isinstance(e, ValidationError):
             raise e

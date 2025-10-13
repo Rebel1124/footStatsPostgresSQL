@@ -86,15 +86,11 @@ def get_bet_odds(
             case _:
                 assert_never(bookmaker)
     except Exception as e:
-        if isinstance(e, ValidationError):
-            raise e
-
         if retries == 0:
             logger.opt(exception=e).warning(
                 "Failed to get bet odds for {} {}", bookmaker, league
             )
-
-            raise e
+            return []
 
         logger.debug(
             "Failed to get bet odds for {} {} | retries left {}",

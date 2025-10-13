@@ -31,15 +31,18 @@ def get_pinnacle_odds(
         retries -= 1
 
     while True:
-        resp = page.goto(url, timeout=30_000, wait_until="commit")
-        assert resp
+        resp = page.goto(url, timeout=60_000, wait_until="commit")
+        if resp is None:
+            fail("Resp is None")
+            continue
+
         if resp.status != 200:
             fail(f"Status code {resp.status}")
             continue
 
         break
 
-    page.wait_for_selector(".contentBlock.square", timeout=30_000)
+    page.wait_for_selector(".contentBlock.square", timeout=60_000)
     sleep(3)
     html = page.content()
     tz_str = page.evaluate("Intl.DateTimeFormat().resolvedOptions().timeZone")
@@ -71,8 +74,8 @@ def _parse_odds(html: str, browser_tz: tzinfo):
         home, draw, away, *_ = game.xpath(".//button//text()").getall()
 
         yield MatchOdds(
-            home_team=home_team.removesuffix(" (match)"),
-            away_team=away_team.removesuffix(" (match)"),
+            home_team=home_team.strip().lower().removesuffix(" (match)"),
+            away_team=away_team.strip().lower().removesuffix(" (match)"),
             home_odds=home,  # type: ignore
             draw_odds=draw,  # type: ignore
             away_odds=away,  # type: ignore

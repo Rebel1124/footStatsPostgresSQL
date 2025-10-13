@@ -45,12 +45,15 @@ class _Event(BaseModel):
 
 
 class SupabetsData(BaseModel):
-    events: list[_Event] = Field(
-        validation_alias=AliasPath("d", "Detail", "SottoEventiList")
+    events: list[_Event] | None = Field(
+        validation_alias=AliasPath("d", "Detail", "SottoEventiList"),
+        default=None,
     )
 
 
 def parse_supa_bets_odds(data: SupabetsData):
+    if data.events is None:
+        return
     for event in data.events:
         home_team, away_team = event.name.split(" - ")
         yield MatchOdds(

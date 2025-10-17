@@ -131,5 +131,5 @@ PINNACLE_URLS: dict[League, str | None] = {
     League.ITALY_SERIE_A: "https://www.pinnacle.com/en/soccer/italy-serie-a/matchups/#all",
     League.SOUTH_AFRICA_PREMIER_SOCCER_LEAGUE: "https://www.pinnacle.com/en/soccer/south-africa-psl/matchups/#all",
     League.EUROPE_UEFA_EUROPA_LEAGUE: "https://www.pinnacle.com/en/soccer/uefa-europa-league/matchups/#all",
-    League.SOUTH_AFRICA_NATIONAL_FIRST_DIVISION: None,
+    League.SOUTH_AFRICA_NATIONAL_FIRST_DIVISION: "https://www.pinnacle.com/en/soccer/south-africa-1st-division/matchups/#all",
 }

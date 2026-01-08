@@ -1,4 +1,4 @@
-from datetime import UTC, datetime, tzinfo
+from datetime import UTC, datetime, timedelta, tzinfo
 from time import sleep
 from zoneinfo import ZoneInfo
 
@@ -58,8 +58,14 @@ def _parse_odds(html: str, browser_tz: tzinfo):
     games = iter(games)
     for game in games:
         if game.attrib["data-test-id"] == "Events.DateBar":
-            [raw_date] = game.xpath("./span/text()").getall()
-            game_date = datetime.strptime(raw_date, "%a, %b %d, %Y")
+            match game.xpath("./text()").get():
+                case "Tomorrow":
+                    game_date = datetime.now(browser_tz) + timedelta(days=1)
+                case "Today":
+                    game_date = datetime.now(browser_tz)
+                case _:
+                    [raw_date] = game.xpath("./span/text()").getall()
+                    game_date = datetime.strptime(raw_date, "%a, %b %d, %Y")
             next(games)  # skip next
             continue
 
@@ -71,8 +77,11 @@ def _parse_odds(html: str, browser_tz: tzinfo):
             hour=int(hour), minute=int(minute), tzinfo=browser_tz
         ).astimezone(UTC)
 
-        home, draw, away, *_ = game.xpath(".//button//text()").getall()
-
+        buttons = game.xpath(".//button//text()").getall()
+        if not buttons:
+            home = draw = away = 0
+        else:
+            home, draw, away, *_ = buttons
         yield MatchOdds(
             home_team=home_team.strip().lower().removesuffix(" (match)"),
             away_team=away_team.strip().lower().removesuffix(" (match)"),

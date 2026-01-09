@@ -98,7 +98,7 @@ def get_bet_odds(
             league,
             retries,
         )
-        return get_bet_odds(bookmaker, league, page, retries=retries - 1)
+    return get_bet_odds(bookmaker, league, page, retries=retries - 1)
 
 
 def get_league_matches_odds(

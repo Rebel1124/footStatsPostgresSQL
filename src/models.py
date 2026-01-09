@@ -5,9 +5,9 @@ from src.scrapers import Bookmaker
 
 
 class Odds1X2(BaseModel):
-    home: float
-    draw: float
-    away: float
+    home: float | None
+    draw: float | None
+    away: float | None
 
 
 class AggregatedMatchOdds(BaseModel):

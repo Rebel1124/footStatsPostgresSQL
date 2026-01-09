@@ -79,7 +79,7 @@ def _parse_odds(html: str, browser_tz: tzinfo):
 
         buttons = game.xpath(".//button//text()").getall()
         if not buttons:
-            home = draw = away = 0
+            home = draw = away = None
         else:
             home, draw, away, *_ = buttons
         yield MatchOdds(

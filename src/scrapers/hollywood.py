@@ -25,7 +25,7 @@ def get_hollywood_bets_odds(league: League) -> list[MatchOdds]:
 
 
 class _Market(BaseModel):
-    odds: float
+    odds: float | None
     name: str | Literal["DRAW"]
 
 
@@ -48,8 +48,14 @@ def parse_hollywodd_bets_odds(data: SportEventsResp):
         if " vs " not in event.name:
             continue
 
-        [bet] = event.betTypes
-        home, draw, away = bet.markets
+        bets = event.betTypes
+        if len(bets) == 0:
+            home_team, away_team = event.name.split(" vs ")
+            home = _Market(odds=None, name=home_team)
+            draw = _Market(odds=None, name="DRAW")
+            away = _Market(odds=None, name=away_team)
+        else:
+            home, draw, away = bets[0].markets
 
         yield MatchOdds(
             home_team=home.name,

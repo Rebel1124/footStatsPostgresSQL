@@ -41,9 +41,9 @@ class MatchOdds(BaseModel):
     away_team: StrTeamName
     start_at: AwareDatetime
 
-    home_odds: float
-    draw_odds: float
-    away_odds: float
+    home_odds: float | None
+    draw_odds: float | None
+    away_odds: float | None
 
 
 HEADERS = {

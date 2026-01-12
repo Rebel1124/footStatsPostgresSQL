@@ -61,6 +61,7 @@ def _parse_odds(html: str, browser_tz: tzinfo):
             match game.xpath("./text()").get():
                 case "Tomorrow":
                     game_date = datetime.now(browser_tz) + timedelta(days=1)
+
                 case "Today":
                     game_date = datetime.now(browser_tz)
                 case _:
@@ -74,7 +75,11 @@ def _parse_odds(html: str, browser_tz: tzinfo):
         home_team, away_team, game_hours = element.xpath(".//text()").getall()
         hour, minute = game_hours.split(":")
         game_time = game_date.replace(
-            hour=int(hour), minute=int(minute), tzinfo=browser_tz
+            hour=int(hour),
+            minute=int(minute),
+            tzinfo=browser_tz,
+            second=0,
+            microsecond=0,
         ).astimezone(UTC)
 
         buttons = game.xpath(".//button//text()").getall()

@@ -13,6 +13,7 @@ from src.config import (
 )
 from src.models import AggregatedMatchOdds, Odds1X2
 from src.scrapers import Bookmaker, MatchOdds, get_browser_context
+from src.scrapers import supersport
 from src.scrapers.bet10 import get_bet_10_odds
 from src.scrapers.betway import get_bet_way_odds
 from src.scrapers.hollywood import get_hollywood_bets_odds
@@ -41,7 +42,7 @@ def aggregate_match_odds(odds: dict[Bookmaker, list[MatchOdds]], league: League)
             league=league,
             odds={
                 Bookmaker.BET_10: Odds1X2(
-                    home=match.home_odds, draw=match.draw_odds, away=match.draw_odds
+                    home=match.home_odds, draw=match.draw_odds, away=match.away_odds
                 )
             },
         )
@@ -58,7 +59,7 @@ def aggregate_match_odds(odds: dict[Bookmaker, list[MatchOdds]], league: League)
             match_odds.odds[bookmaker] = Odds1X2(
                 home=similar_match.home_odds,
                 draw=similar_match.draw_odds,
-                away=similar_match.draw_odds,
+                away=similar_match.away_odds,
             )
 
         yield match_odds

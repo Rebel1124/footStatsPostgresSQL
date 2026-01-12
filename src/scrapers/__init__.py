@@ -169,8 +169,8 @@ def get_browser_context():
                 "height": random.randint(800, 1000),
                 "width": random.randint(800, 1000),
             },
-            locale="en-ZA",
-            timezone_id="Africa/Johannesburg",
+            locale="en-US",
+            timezone_id="Europe/Zagreb",
         )
 
         yield context

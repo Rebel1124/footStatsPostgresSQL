@@ -25,7 +25,9 @@ class LeaguePlayer(StrictBaseModel):
     club_team_id: int
     club_team_2_id: int
     national_team_id: int
-    position: Literal["Goalkeeper", "Defender", "Midfielder", "Forward", "Coach"]
+    position: (
+        str  #  Literal["Goalkeeper", "Defender", "Midfielder", "Forward", "Coach"]
+    )
     minutes_played_overall: int
     minutes_played_home: int
     minutes_played_away: int

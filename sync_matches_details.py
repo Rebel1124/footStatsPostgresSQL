@@ -4,7 +4,7 @@ import time
 from loguru import logger
 
 from src.config import FOOTYSTATS_API_KEY, LEAGUES_NAMES
-from src.footystats import FootyStats
+from src.footystats import FootyStats, NotFound
 from src.footystats_db import (
     get_season_metadatas,
     upser_match_details_to_db,
@@ -20,13 +20,17 @@ def sync_matches_details():
         matches = footy.get_league_matches(metadata.season_id)
         match_ids = {m.id for m in matches}
         for match_id in match_ids:
-            match_details = footy.get_match_details(match_id)
-            upser_match_details_to_db(match_details)
-            logger.info(
-                "Fetched and stored match details (match_id={match_id}, season_id={season_id})",
-                match_id=match_id,
-                season_id=metadata.season_id,
-            )
+            try:
+                match_details = footy.get_match_details(match_id)
+                upser_match_details_to_db(match_details)
+                logger.info(
+                    "Fetched and stored match details (match_id={match_id}, season_id={season_id})",
+                    match_id=match_id,
+                    season_id=metadata.season_id,
+                )
+            except NotFound as e:
+                logger.warning(f"{e!r}")
+
             time.sleep(SECONDS_GAP)
 
 

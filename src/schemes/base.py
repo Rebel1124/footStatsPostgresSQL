@@ -6,7 +6,7 @@ from pydantic import BaseModel, BeforeValidator, ConfigDict
 
 
 class StrictBaseModel(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="allow")
 
 
 add_base_domain = BeforeValidator(

@@ -41,7 +41,7 @@ class _Coordinates(StrictBaseModel):
 
 class _Wind(StrictBaseModel):
     degree: int | None = None
-    speed: Annotated[str | None, validate_speed] = None
+    speed: Annotated[str | float | None, validate_speed] = None
 
 
 class Weather(StrictBaseModel):

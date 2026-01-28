@@ -47,12 +47,12 @@ class _Wind(StrictBaseModel):
 class Weather(StrictBaseModel):
     coordinates: _Coordinates | None = None
     temperature: _Temperature | None = None
-    humidity: Annotated[str | None, validate_percent]
-    wind: _Wind
-    type: str
-    temperature_celcius: _Temperature
-    clouds: Annotated[str | None, validate_percent]
-    code: str | None  # Literal[
+    humidity: Annotated[str | None, validate_percent] = None
+    wind: _Wind | None = None
+    type: str | None = None
+    temperature_celcius: _Temperature | None = None
+    clouds: Annotated[str | None, validate_percent] = None
+    code: str | None = None  # Literal[
     #     "rain",
     #     "clear",
     #     "clouds",
@@ -63,4 +63,4 @@ class Weather(StrictBaseModel):
     #     "thunderstorm",
     #     "haze",
     # ]
-    pressure: int
+    pressure: int | None = None

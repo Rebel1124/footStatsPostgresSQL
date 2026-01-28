@@ -22,7 +22,7 @@ def validate_speed(speed):
     digits, notation = speed.split()
     if notation != "m/s":
         raise ValueError(f"'{speed}' must have 'm/s' instead")
-    float(digits)
+    return float(digits)
 
 
 StrPercent = Annotated[str, validate_percent]
@@ -40,8 +40,8 @@ class _Coordinates(StrictBaseModel):
 
 
 class _Wind(StrictBaseModel):
-    degree: int
-    speed: Annotated[str | None, validate_speed]
+    degree: int | None = None
+    speed: Annotated[str | None, validate_speed] = None
 
 
 class Weather(StrictBaseModel):

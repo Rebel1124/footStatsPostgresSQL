@@ -30,8 +30,8 @@ StrSpeed = Annotated[str, validate_speed]
 
 
 class _Temperature(StrictBaseModel):
-    temp: float
-    unit: Literal["fahrenheit", "celcius"]
+    temp: float | None = None
+    unit: Literal["fahrenheit", "celcius", None] = None
 
 
 class _Coordinates(StrictBaseModel):
@@ -45,14 +45,14 @@ class _Wind(StrictBaseModel):
 
 
 class Weather(StrictBaseModel):
-    coordinates: _Coordinates
-    temperature: _Temperature
+    coordinates: _Coordinates | None = None
+    temperature: _Temperature | None = None
     humidity: Annotated[str | None, validate_percent]
     wind: _Wind
     type: str
     temperature_celcius: _Temperature
     clouds: Annotated[str | None, validate_percent]
-    code: str  # Literal[
+    code: str | None  # Literal[
     #     "rain",
     #     "clear",
     #     "clouds",

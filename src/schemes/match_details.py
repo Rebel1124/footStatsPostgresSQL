@@ -16,7 +16,7 @@ class _GoalDetails(StrictBaseModel):
     time: str
     extra: Annotated[str | None, minus_one_to_none]
     goal_smid: int | None = None
-    type: None = None
+    type: None | str = None
 
 
 class _CardDetails(StrictBaseModel):
